@@ -1,0 +1,35 @@
+@media (min-width: 1200px) {
+  .container {
+    width: 60%;
+  }
+}
+
+#course-title {
+	color: #607D8B;
+	margin-bottom: 16px;
+}
+
+.add-section {
+	margin-left: 18px;
+}
+
+.list-section {
+	margin-left: -18px;
+	padding-right: 28px;
+}
+
+.snippet {
+	margin-bottom: 16px;
+}
+
+.snippet .title {
+	color: #546E7A;
+}
+
+.snippet hr {
+	width: 12%;
+}
+
+#snippet-empty {
+	margin-left: 34px;
+}
