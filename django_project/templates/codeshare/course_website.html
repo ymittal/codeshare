@@ -1,0 +1,78 @@
+{% extends "codeshare/base.html" %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/coursepage.css' %}">
+
+<h1 id="course-title">
+    {{ course_name }}
+</h1>
+
+<div class="add-section">
+    <form action="" method="POST">
+    {% csrf_token %}
+
+    {{ form.errors }}
+    {{ form.non_field_errors }}
+
+    <div class="form-group">
+        <div class="input-group col-xs-4">
+            {{ form.title }}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-group col-xs-8">
+            {{ form.code }}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-group col-xs-2">
+            <input class="btn btn-primary" type="submit" value="Add Snippet"/>
+        </div>
+    </div>
+
+    </form>
+</div>
+
+<hr>
+
+<div class="list-section">
+    {% if snippets %}
+    <ul>
+        {% for snippet in snippets reversed %}
+        <div class="snippet">
+            <div class="clearfix">
+                <span class="btn-group pull-right">
+                    <button class="btn btn-success btn-copy" data-clipboard-target="#s{{ snippet.id }}">Copy</button>
+                    <a class="btn btn-danger" href="{% url 'codeshare:delete' course_name=course_name snippet_id=snippet.id %}">Delete</a>
+                </span>
+                <span class="inline">
+                    <h4 class="title">{{ snippet.title }}</h4>
+                </span>
+            </div>
+            <div id="s{{ snippet.id }}">
+                <pre><code>{{ snippet.code }}</code></pre>
+            </div>
+
+            {% if not forloop.last %}
+                <hr>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+    </ul>
+    {% else %}
+        <div id="snippet-empty">
+            No snippets found.
+        </div>
+    {% endif %}
+</div>
+
+<!-- SCRIPTS -->
+<script src="{% static 'js/clipboard.min.js' %}"></script>
+<script>
+    var clipboard = new Clipboard('.btn-copy');
+</script>
+
+{% endblock content %}

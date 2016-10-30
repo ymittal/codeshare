@@ -1,0 +1,27 @@
+{% extends "codeshare/base.html" %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+
+<div class="panel panel-default course-panel">
+  <div class="panel-heading">Course Codeshare</div>
+	<div class="panel-body">
+		<form action="/codeshare/" method="post">
+			{% csrf_token %}
+
+			<div class="clearfix">
+			<div class="input-group pull-right">
+				<input class="btn btn-success" type="submit" value="Submit"/>
+			</div>
+			<div class="input-group img-rounded">
+				<input class="form-control" placeholder="Course Name" id="course" type="text" name="course_name">
+			</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock content %}
