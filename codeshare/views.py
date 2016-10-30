@@ -6,18 +6,10 @@ from models import Course, CodeSnippet
 from .forms import SnippetForm
 
 
-def addCourseIfNotFound(course_name):
-    courses = list(Course.objects.all().values_list("name", flat=True))
-    if course_name not in courses:
-        newCourse = Course(name=course_name)
-        newCourse.save()
-
-
 def index(request):
     if request.POST:
         course_name = request.POST.get("course_name")
         if course_name:
-            addCourseIfNotFound(course_name)
             return HttpResponseRedirect(
                 reverse("codeshare:course", kwargs={"course_name": course_name}))
 
@@ -42,7 +34,15 @@ def getCourseSnippets(course_name):
     return CodeSnippet.objects.filter(course=getCourseFromName(course_name))
 
 
+def addCourseIfNotFound(course_name):
+    courses = list(Course.objects.all().values_list("name", flat=True))
+    if course_name not in courses:
+        newCourse = Course(name=course_name)
+        newCourse.save()
+
+
 def course(request, course_name):
+    addCourseIfNotFound(course_name)
     if request.POST:
         form = SnippetForm(request.POST)
         if form.is_valid():
