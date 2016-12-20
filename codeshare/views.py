@@ -1,9 +1,10 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.contrib.auth import authenticate, login
 
-from .models import Course, CodeSnippet
-from .forms import SnippetForm
+from .models import Course, CodeSnippet, Instructor
+from .forms import SnippetForm, UserForm, InstructorForm
 
 
 def index(request):
@@ -68,3 +69,55 @@ def delete(request, course_name, snippet_id):
     obj.delete()
 
     return HttpResponseRedirect(reverse("codeshare:course", kwargs={"course_name": course_name}))
+
+
+def signin(request):
+    if request.POST:
+        if 'login' in request.POST:
+            return loginUser(request)
+        elif 'register' in request.POST:
+            return register(request)
+
+    context = {
+        "user_form": UserForm(),
+        "instructor_form": InstructorForm(),
+    }
+
+    return render(request, "codeshare/signin.html", context)
+
+
+def loginUser(request):
+    username = request.POST['username']
+    password = request.POST['password']
+
+    print ("Attempting login for %s" % username)
+
+    user = authenticate(username=username, password=password)
+    if user:
+        if user.is_active:
+            login(request, user)
+            print ("Login successful")
+            return HttpResponseRedirect(reverse("codeshare:index"))
+        else:
+            return HttpResponseRedirect("Your account is disabled!")
+    else:
+        return HttpResponse("Invalid login details")
+
+def register(request):
+    print ("Registering...")
+    user_form = UserForm(request.POST)
+    if user_form.is_valid():
+        user = user_form.save()
+        user.set_password(user.password)
+        user.save()
+
+        instructor_form = InstructorForm(
+            request.POST, instance=Instructor(user=request.user))
+        if instructor_form.is_valid():
+            instructor = instructor_form.save(commit=False)
+            instructor.user = user
+            instructor.save()
+
+    print ("Registeration successful")
+    login(request, user)
+    return HttpResponseRedirect(reverse("codeshare:index"))
