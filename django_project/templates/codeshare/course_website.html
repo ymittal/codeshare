@@ -9,33 +9,35 @@
     {{ course_name }}
 </h1>
 
-<div class="add-section">
-    <form action="" method="POST">
-    {% csrf_token %}
+{% if can_modify %}
+    <div class="add-section">
+        <form action="" method="POST">
+        {% csrf_token %}
 
-    {{ form.errors }}
-    {{ form.non_field_errors }}
+        {{ form.errors }}
+        {{ form.non_field_errors }}
 
-    <div class="form-group">
-        <div class="input-group col-xs-4">
-            {{ form.title }}
+        <div class="form-group">
+            <div class="input-group col-xs-4">
+                {{ form.title }}
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="input-group col-xs-8">
-            {{ form.code }}
+        <div class="form-group">
+            <div class="input-group col-xs-8">
+                {{ form.code }}
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="input-group col-xs-2">
-            <input class="btn btn-primary" type="submit" value="Add Snippet"/>
+        <div class="form-group">
+            <div class="input-group col-xs-2">
+                <input class="btn btn-primary" type="submit" value="Add Snippet"/>
+            </div>
         </div>
+
+        </form>
     </div>
 
-    </form>
-</div>
-
-<hr>
+    <hr>
+{% endif %}
 
 <div class="list-section">
     {% if snippets %}
@@ -45,7 +47,9 @@
             <div class="clearfix">
                 <span class="btn-group pull-right">
                     <button class="btn btn-success btn-copy" data-clipboard-target="#s{{ snippet.id }}">Copy</button>
-                    <a class="btn btn-danger" href="{% url 'codeshare:delete' course_name=course_name snippet_id=snippet.id %}">Delete</a>
+                    {% if can_modify %}
+                        <a class="btn btn-danger" href="{% url 'codeshare:delete' course_name=course_name snippet_id=snippet.id %}">Delete</a>
+                    {% endif %}
                 </span>
                 <span class="inline">
                     <h4 class="title">{{ snippet.title }}</h4>

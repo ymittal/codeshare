@@ -12,9 +12,6 @@ def index(request):
     if request.POST:
         course_name = request.POST.get("course_name").title()
         if course_name:
-            if not doesCourseExist(course_name):
-                addCourse(course_name)
-
             return HttpResponseRedirect(reverse("codeshare:course", kwargs={"course_name": course_name}))
 
     return render(request, "codeshare/index.html")
@@ -38,8 +35,12 @@ def getCourseSnippets(course_name):
     return CodeSnippet.objects.filter(course=getCourseFromName(course_name))
 
 
-def addCourse(course_name):
+def addCourse(request, course_name):
     newCourse = Course(name=course_name)
+    try:
+        newCourse.creator = User.objects.get(username=request.user.username)
+    except:
+        newCourse.creator = User.objects.get(username='admin')
     newCourse.save()
 
 
@@ -47,7 +48,24 @@ def doesCourseExist(course_name):
     return course_name in list(Course.objects.all().values_list("name", flat=True))
 
 
+def getCourseAccess(request, course_name):
+    course = getCourseFromName(course_name)
+    try:
+        if course.creator == User.objects.get(username=request.user.username):
+            return True
+        else:
+            return not course.isPrivate
+    except:
+        if course.isPrivate:
+            return False
+        else:
+            return True
+
+
 def course(request, course_name):
+    if not doesCourseExist(course_name):
+        addCourse(request, course_name)
+
     if request.POST:
         form = SnippetForm(request.POST)
         if form.is_valid():
@@ -57,9 +75,10 @@ def course(request, course_name):
     context = {
         "course_name": course_name,
         "form": SnippetForm(),
-        "snippets": getCourseSnippets(course_name)
+        "snippets": getCourseSnippets(course_name),
+        "can_modify": getCourseAccess(request, course_name),
     }
-
+    
     return render(request, "codeshare/course_website.html", context)
 
 
@@ -106,25 +125,26 @@ def loginUser(request):
 
 
 def register(request):
-    if User.objects.get(username=request.POST['username']):
-        return HttpResponse("Username already taken")
+    try:
+        if User.objects.get(username=request.POST['username']):
+            return HttpResponse("Username already taken")
+    except:
+        user_form = UserForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save()
+            user.set_password(user.password)
+            user.save()
 
-    user_form = UserForm(request.POST)
-    if user_form.is_valid():
-        user = user_form.save()
-        user.set_password(user.password)
-        user.save()
+            instructor_form = InstructorForm(
+                request.POST, instance=Instructor(user=user))
+            if instructor_form.is_valid():
+                instructor = instructor_form.save(commit=False)
+                instructor.user = user
+                instructor.save()
 
-        instructor_form = InstructorForm(
-            request.POST, instance=Instructor(user=user))
-        if instructor_form.is_valid():
-            instructor = instructor_form.save(commit=False)
-            instructor.user = user
-            instructor.save()
-
-        print ("Registeration successful")
-        auth.login(request, user)
-        return HttpResponseRedirect(reverse("codeshare:index"))
+            print ("Registeration successful")
+            auth.login(request, user)
+            return HttpResponseRedirect(reverse("codeshare:index"))
 
 
 def logout(request):
