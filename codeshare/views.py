@@ -1,7 +1,8 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib import auth
+from django.contrib.auth import authenticate
 
 from .models import Course, CodeSnippet, Instructor
 from .forms import SnippetForm, UserForm, InstructorForm
@@ -71,7 +72,7 @@ def delete(request, course_name, snippet_id):
     return HttpResponseRedirect(reverse("codeshare:course", kwargs={"course_name": course_name}))
 
 
-def signin(request):
+def login(request):
     if request.POST:
         if 'login' in request.POST:
             return loginUser(request)
@@ -83,7 +84,7 @@ def signin(request):
         "instructor_form": InstructorForm(),
     }
 
-    return render(request, "codeshare/signin.html", context)
+    return render(request, "codeshare/login.html", context)
 
 
 def loginUser(request):
@@ -95,13 +96,14 @@ def loginUser(request):
     user = authenticate(username=username, password=password)
     if user:
         if user.is_active:
-            login(request, user)
+            auth.login(request, user)
             print ("Login successful")
             return HttpResponseRedirect(reverse("codeshare:index"))
         else:
             return HttpResponseRedirect("Your account is disabled!")
     else:
         return HttpResponse("Invalid login details")
+
 
 def register(request):
     print ("Registering...")
@@ -112,12 +114,18 @@ def register(request):
         user.save()
 
         instructor_form = InstructorForm(
-            request.POST, instance=Instructor(user=request.user))
+            request.POST, instance=Instructor(user=user))
         if instructor_form.is_valid():
             instructor = instructor_form.save(commit=False)
             instructor.user = user
             instructor.save()
 
     print ("Registeration successful")
-    login(request, user)
+    auth.login(request, user)
+    return HttpResponseRedirect(reverse("codeshare:index"))
+
+
+def logout(request):
+    print ("Signing off...")
+    auth.logout(request)
     return HttpResponseRedirect(reverse("codeshare:index"))
