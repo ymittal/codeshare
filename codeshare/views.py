@@ -12,6 +12,9 @@ def index(request):
     if request.POST:
         course_name = request.POST.get("course_name").title()
         if course_name:
+            if not doesCourseExist(course_name):
+                addCourse(request, course_name)
+
             return HttpResponseRedirect(reverse("codeshare:course", kwargs={"course_name": course_name}))
 
     return render(request, "codeshare/index.html")
@@ -26,7 +29,8 @@ def getCourseFromName(course_name):
 def addSnippet(form, course_name):
     newSnippet = CodeSnippet()
     newSnippet.course = getCourseFromName(course_name)
-    newSnippet.title = form.cleaned_data["title"]
+    newSnippet.title = form.cleaned_data["title"] \
+        if form.cleaned_data["title"] else "Code Snippet"
     newSnippet.code = form.cleaned_data["code"]
     newSnippet.save()
 
@@ -41,6 +45,10 @@ def addCourse(request, course_name):
         newCourse.creator = User.objects.get(username=request.user.username)
     except:
         newCourse.creator = User.objects.get(username='admin')
+    try:
+        newCourse.isPrivate = request.POST["is_private"]
+    except:
+        pass
     newCourse.save()
 
 
@@ -56,20 +64,17 @@ def getCourseAccess(request, course_name):
         else:
             return not course.isPrivate
     except:
-        if course.isPrivate:
-            return False
-        else:
-            return True
+        return not course.isPrivate
 
 
 def course(request, course_name):
+    course_name = course_name.title()
     if not doesCourseExist(course_name):
         addCourse(request, course_name)
 
     if request.POST:
         form = SnippetForm(request.POST)
         if form.is_valid():
-            course_name = course_name if len(course_name) else "Code Snippet"
             addSnippet(form, course_name)
 
     context = {
@@ -78,7 +83,7 @@ def course(request, course_name):
         "snippets": getCourseSnippets(course_name),
         "can_modify": getCourseAccess(request, course_name),
     }
-    
+
     return render(request, "codeshare/course_website.html", context)
 
 

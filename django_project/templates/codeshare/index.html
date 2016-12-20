@@ -13,13 +13,18 @@
 			{% csrf_token %}
 
 			<div class="clearfix">
-			<div class="input-group pull-right">
-				<input class="btn btn-success" type="submit" value="Submit"/>
+				<div class="input-group pull-right">
+					<input class="btn btn-success" type="submit" value="Submit"/>
+				</div>
+				<div class="input-group img-rounded">
+					<input class="form-control" placeholder="course or workshop name" id="course" type="text" name="course_name">
+				</div>
 			</div>
-			<div class="input-group img-rounded">
-				<input class="form-control" placeholder="course or workshop name" id="course" type="text" name="course_name">
-			</div>
-			</div>
+
+			{% if request.user.is_authenticated %}
+				<input type="checkbox" name="is_private">
+				Don't allow others to modify codeshare
+			{% endif %}
 		</form>
 	</div>
 </div>

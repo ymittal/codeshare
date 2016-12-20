@@ -17,7 +17,7 @@ class Instructor(models.Model):
 class Course(models.Model):
     name = models.CharField(max_length=30)
     creator = models.ForeignKey(User, null=True)
-    isPrivate = models.BooleanField(default=True)
+    isPrivate = models.BooleanField(default=False)
 
     def __unicode__(self):
         return str(self.name)
