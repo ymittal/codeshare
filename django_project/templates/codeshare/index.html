@@ -7,7 +7,7 @@
 
 
 <div class="panel panel-default course-panel">
-  <div class="panel-heading">Course Codeshare</div>
+  <div class="panel-heading">Codeshare</div>
 	<div class="panel-body">
 		<form action="" method="post">
 			{% csrf_token %}
@@ -17,7 +17,7 @@
 				<input class="btn btn-success" type="submit" value="Submit"/>
 			</div>
 			<div class="input-group img-rounded">
-				<input class="form-control" placeholder="Course Name" id="course" type="text" name="course_name">
+				<input class="form-control" placeholder="course or workshop name" id="course" type="text" name="course_name">
 			</div>
 			</div>
 		</form>
@@ -28,7 +28,7 @@
 	{{ request.user.username }}
 	<a href="logout">Logout</a>
 {% else %}
-	<a href="login">Login</a>
+	Are you a professor? <a href="login">Login</a>
 {% endif %}
 
 {% endblock content %}

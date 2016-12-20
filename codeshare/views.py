@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth import authenticate
 
-from .models import Course, CodeSnippet, Instructor
+from .models import User, Course, CodeSnippet, Instructor
 from .forms import SnippetForm, UserForm, InstructorForm
 
 
@@ -106,7 +106,9 @@ def loginUser(request):
 
 
 def register(request):
-    print ("Registering...")
+    if User.objects.get(username=request.POST['username']):
+        return HttpResponse("Username already taken")
+
     user_form = UserForm(request.POST)
     if user_form.is_valid():
         user = user_form.save()
@@ -120,9 +122,9 @@ def register(request):
             instructor.user = user
             instructor.save()
 
-    print ("Registeration successful")
-    auth.login(request, user)
-    return HttpResponseRedirect(reverse("codeshare:index"))
+        print ("Registeration successful")
+        auth.login(request, user)
+        return HttpResponseRedirect(reverse("codeshare:index"))
 
 
 def logout(request):
