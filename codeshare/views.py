@@ -46,7 +46,7 @@ def addCourse(request, course_name):
     except:
         newCourse.creator = User.objects.get(username='admin')
     try:
-        newCourse.isPrivate = request.POST["is_private"]
+        newCourse.isPrivate = False if not request.POST["is_private"] else True
     except:
         pass
     newCourse.save()
