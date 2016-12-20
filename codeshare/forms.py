@@ -13,6 +13,6 @@ class SnippetForm(forms.ModelForm):
             "code",
         ]
         widgets = {
-        	"title": TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
+        	"title": TextInput(attrs={'class': 'form-control', 'placeholder': 'Title (not required)'}),
         	"code": Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter code here'}),
         }

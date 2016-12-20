@@ -49,6 +49,7 @@ def course(request, course_name):
     if request.POST:
         form = SnippetForm(request.POST)
         if form.is_valid():
+            course_name = course_name if len(course_name) else "Code Snippet"
             addSnippet(form, course_name)
 
     context = {

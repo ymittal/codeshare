@@ -17,7 +17,7 @@ class CodeSnippet(models.Model):
     course = models.ForeignKey(Course)
     title = models.CharField(null=True,
                              max_length=30,
-                             default="Code Snippet")
+                             blank=True)
     code = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
