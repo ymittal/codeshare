@@ -9,6 +9,9 @@ class Course(models.Model):
     def __unicode__(self):
         return str(self.name)
 
+    def __str__(self):
+        return str(self.name)
+
 
 class CodeSnippet(models.Model):
     course = models.ForeignKey(Course)
@@ -19,4 +22,7 @@ class CodeSnippet(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
+        return self.title + " | " + str(self.timestamp)
+
+    def __str__(self):
         return self.title + " | " + str(self.timestamp)
