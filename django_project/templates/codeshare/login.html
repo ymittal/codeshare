@@ -3,15 +3,36 @@
 {% block content %}
 
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 
-<form action="" method="post">
-	{% csrf_token %}
+<div class="main-content">
+	<form action="" method="post" class="form-horizontal">
+		{% csrf_token %}
 
-	{{ user_form.username }}
-	{{ user_form.password }}
-
-	<input type="submit" name="login" value="Login">
-	<input type="submit" name="register" value="Register">
-</form>
+		<div class="form-group">
+			<div class="col-sm-4">
+				{{ user_form.username }}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-4">
+				{{ user_form.password }}
+			</div>
+		</div>
+		<div class="btn-group">
+			<div class="form-group pull-left">
+				<div class="col-xs-2">
+					<input class="btn btn-default" type="submit" name="login" value="Login">
+				</div>
+			</div>
+			&nbsp;
+			<div class="form-group pull-right">
+				<div class="col-xs-2">
+					<input class="btn btn-default" type="submit" name="register" value="Register">
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
 
 {% endblock content %}

@@ -1,8 +1,18 @@
-.course-panel {
-	width: 310px;
+.main-content {
+	height: 100px;
+	width: 320px;
 	margin: auto;
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	-webkit-transform: translate(-50%, -50%);
+  	margin-top: -50px;
+  	-webkit-transform: translate(-50%, -50%);
+}
+
+.course-panel {
+	margin-bottom: 6px;
+}
+
+.login-status {
+	text-align: center;
 }

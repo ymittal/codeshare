@@ -7,7 +7,8 @@ from .models import Instructor, CodeSnippet
 
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={'class': 'form-control', 'name': 'password', 'placeholder': 'Password'}))
 
     class Meta:
         model = User
@@ -16,8 +17,7 @@ class UserForm(forms.ModelForm):
             "password",
         ]
         widgets = {
-            "username": TextInput(attrs={'name': 'username', 'placeholder': 'Username'}),
-            "password": TextInput(attrs={'password': 'password'}),
+            "username": TextInput(attrs={'class': 'form-control', 'name': 'username', 'placeholder': 'Username', 'autocomplete': 'off'}),
         }
 
 
