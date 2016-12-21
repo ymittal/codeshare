@@ -17,7 +17,7 @@ class UserForm(forms.ModelForm):
             "password",
         ]
         widgets = {
-            "username": TextInput(attrs={'class': 'form-control', 'name': 'username', 'placeholder': 'Username', 'autocomplete': 'off'}),
+            "username": TextInput(attrs={'class': 'form-control', 'name': 'username', 'placeholder': 'Username'}),
         }
 
 
