@@ -56,7 +56,7 @@
                 </span>
             </div>
             <div id="s{{ snippet.id }}">
-                <pre><code>{{ snippet.code }}</code></pre>
+                <pre><code class="prettyprint">{{ snippet.code }}</code></pre>
             </div>
 
             {% if not forloop.last %}
@@ -74,6 +74,7 @@
 </div>
 
 <!-- SCRIPTS -->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 <script src="{% static 'js/clipboard.min.js' %}"></script>
 <script>
     var clipboard = new Clipboard('.btn-copy');
