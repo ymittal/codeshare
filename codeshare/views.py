@@ -56,15 +56,18 @@ def doesCourseExist(course_name):
     return course_name in list(Course.objects.all().values_list("name", flat=True))
 
 
-def getCourseAccess(request, course_name):
+def isCourseCreator(request, course_name):
     course = getCourseFromName(course_name)
     try:
         if course.creator == User.objects.get(username=request.user.username):
             return True
-        else:
-            return not course.isPrivate
     except:
-        return not course.isPrivate
+        return False
+
+
+def getCourseAccess(course_name):
+    course = getCourseFromName(course_name)
+    return course.isPrivate
 
 
 def course(request, course_name):
@@ -81,7 +84,8 @@ def course(request, course_name):
         "course_name": course_name,
         "form": SnippetForm(),
         "snippets": getCourseSnippets(course_name),
-        "can_modify": getCourseAccess(request, course_name),
+        "is_creator": isCourseCreator(request, course_name),
+        "is_private": getCourseAccess(course_name),
     }
 
     return render(request, "codeshare/course_website.html", context)

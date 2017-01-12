@@ -9,7 +9,17 @@
     {{ course_name }}
 </h1>
 
-{% if can_modify %}
+{% if is_creator %}
+    <div class="checkbox">
+        <label>
+            <!-- TODO: onclick listener on checkbox to change course access -->
+            <input type="checkbox" name="is_private" {% if is_private %} checked {% endif %}>
+            Don't allow others to modify my codeshare
+        </label>
+    </div>
+{% endif %}
+
+{% if is_creator or not is_private %}
     <div class="add-section">
         <form action="" method="POST">
         {% csrf_token %}
@@ -47,7 +57,7 @@
             <div class="clearfix">
                 <span class="btn-group pull-right">
                     <button class="btn btn-success btn-copy" data-clipboard-target="#s{{ snippet.id }}">Copy</button>
-                    {% if can_modify %}
+                    {% if is_creator or not is_private %}
                         <a class="btn btn-danger" href="{% url 'codeshare:delete' course_name=course_name snippet_id=snippet.id %}">Delete</a>
                     {% endif %}
                 </span>
@@ -78,6 +88,10 @@
 <script src="{% static 'js/clipboard.min.js' %}"></script>
 <script>
     var clipboard = new Clipboard('.btn-copy');
+
+    function yolo() {
+        console.log("Hello");
+    }
 </script>
 
 {% endblock content %}
