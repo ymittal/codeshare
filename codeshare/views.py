@@ -1,9 +1,13 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth import authenticate
+from django.views.decorators.csrf import ensure_csrf_cookie
 
+from rest_framework.decorators import api_view
+
+from serializers import CourseAccessSerializer
 from .models import User, Course, CodeSnippet, Instructor
 from .forms import SnippetForm, UserForm, InstructorForm
 
@@ -45,10 +49,6 @@ def addCourse(request, course_name):
         newCourse.creator = User.objects.get(username=request.user.username)
     except:
         newCourse.creator = User.objects.get(username='admin')
-    try:
-        newCourse.isPrivate = False if not request.POST["is_private"] else True
-    except:
-        pass
     newCourse.save()
 
 
@@ -160,3 +160,23 @@ def logout(request):
     print ("Signing off...")
     auth.logout(request)
     return HttpResponseRedirect(reverse("codeshare:index"))
+
+
+@api_view(['POST'])
+@ensure_csrf_cookie
+def changeCourseAccess(request, course_name):
+    course_name = course_name.title()
+    serializer = CourseAccessSerializer(data=request.data)
+    if serializer.is_valid():
+        if isCourseCreator(request, course_name):
+            access = True if request.POST['access'] == 'true' else False
+            course = getCourseFromName(course_name)
+            course.isPrivate = access
+            course.save()
+            return JsonResponse({
+                "detail": "Course access changed successfully"
+            })
+        else:
+            return JsonResponse({
+                "detail": "You do not have appropriate permissions"
+            })

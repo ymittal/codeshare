@@ -39,3 +39,7 @@ class CodeSnippet(models.Model):
 
     def __str__(self):
         return self.title + " | " + str(self.timestamp)
+
+
+class CourseAccess(models.Model):
+    access = models.BooleanField()
